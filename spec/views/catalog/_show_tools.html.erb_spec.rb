@@ -15,7 +15,11 @@ RSpec.describe "catalog/_show_tools.html.erb" do
     let(:document_actions) { blacklight_config.show.document_actions }
 
     it "renders a document action" do
-      allow(view).to receive(:some_action_solr_document_path).with(document).and_return "x"
+      if Rails.version < '6.0.0'
+        allow(view).to receive(:some_action_solr_document_path).with(document).and_return "x"
+      else
+        allow(view).to receive(:some_action_solr_document_path).with(document, only_path: true).and_return "x"
+      end
       document_actions[:some_action] = Blacklight::Configuration::ToolConfig.new partial: 'document_action'
       render partial: 'catalog/show_tools'
       expect(rendered).to have_link "Some action", href: "x"
